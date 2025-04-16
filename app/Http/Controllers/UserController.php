@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use App\Models\Users;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -153,6 +154,33 @@ class UserController extends Controller
                 'success' => false,
                 'message' => 'Error al eliminar el usuario: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function login_user(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required'
+            ], [
+                'email.required' => 'El campo email es obligatorio',
+                'email.email' => 'El campo email debe ser una dirección de correo electrónico válida',
+                'password.required' => 'La contraseña es obligatoria'
+            ]);
+
+            $user = Users::where('email', $request->email)->first();
+
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                return response()->json(['message' => 'Credenciales inválidas'], 401);
+            }
+
+            return response()->json([
+                'message' => 'Inicio de sesión exitoso',
+                'usuario' => $user
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al iniciar sesión: ' . $e->getMessage()], 500);
         }
     }
 }

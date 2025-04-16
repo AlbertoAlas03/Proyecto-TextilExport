@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\UserController;
@@ -37,6 +36,7 @@ Route::get('/list_user', [UserController::class, 'list_user']);
 Route::post('/create_user', [UserController::class, 'create_user']);
 Route::delete('/delete_user', [UserController::class, 'delete_user']);
 Route::put('/update_user', [UserController::class, 'Update_user']);
+Route::middleware([EnsureFrontendRequestsAreStateful::class])->post('/login_user', [UserController::class, 'login_user']);
 
 //clientes
 Route::get('/list_customer', [CustomerController::class, 'list_customer']);
@@ -45,7 +45,7 @@ Route::put('/disable_customer', [CustomerController::class, 'disable_customer'])
 Route::put('/enable_customer', [CustomerController::class, 'enable_customer']);
 Route::get('/verify/{token}', [VerifyController::class, 'verify']);
 Route::post('/register', [CustomerController::class, 'register_customer']);
-Route::middleware([EnsureFrontendRequestsAreStateful::class])->post('/login', [LoginController::class, 'login']);
+Route::middleware([EnsureFrontendRequestsAreStateful::class])->post('/login_customer', [CustomerController::class, 'login_customer']);
 
 //ventas
 Route::get('/list_sale', [SalesController::class, 'list_sale']);

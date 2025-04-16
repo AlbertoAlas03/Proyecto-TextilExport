@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
 
 class CustomerController extends Controller
 {
@@ -199,6 +200,43 @@ class CustomerController extends Controller
             return response()->json(['message' => 'Registro exitoso, verifica tu correo electrónico para activar tu cuenta'], 201);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error al registrar el usuario: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function login_customer(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required'
+            ], [
+                'email.required' => 'El campo email es obligatorio',
+                'email.email' => 'El campo email debe ser una dirección de correo electrónico válida',
+                'password.required' => 'La contraseña es obligatoria'
+            ]);
+
+            $customer = Customers::where('email', $request->email)->first();
+
+            if (!$customer || !Hash::check($request->password, $customer->password)) {
+                return response()->json(['message' => 'Credenciales inválidas'], 401);
+            }
+
+            if (!$customer->verify) {
+                return response()->json([
+                    'message' => 'Por favor verifica tu cuenta antes de iniciar sesión'
+                ], 403);
+            }
+
+            $token = $customer->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'Inicio de sesión exitoso',
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'usuario' => $customer
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al iniciar sesión: ' . $e->getMessage()], 500);
         }
     }
 }
