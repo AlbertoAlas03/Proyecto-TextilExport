@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('detalle_ventas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_sale')->constrained('ventas')->onDelete('cascade');
+            $table->foreignId('id_customer')->constrained('clientes')->onDelete('cascade');
             $table->foreignId('id_product')->constrained('productos')->onDelete('cascade');
             $table->integer('amount')->nullable();
             $table->decimal('unit price', 10, 2);
             $table->decimal('total', 12, 2);
+            $table->string('status', 100)->default('completada');
             $table->timestamps();
         });
     }

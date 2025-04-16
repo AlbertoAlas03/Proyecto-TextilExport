@@ -12,11 +12,12 @@ class SalesDetail extends Model
     protected $table = 'detalle_ventas';
 
     protected $fillable = [
-        'id_sale',
+        'id_customer',
         'id_product',
         'amount',
         'unit price',
-        'total'
+        'total',
+        'status'
     ];
 
     protected $casts = [
@@ -25,9 +26,9 @@ class SalesDetail extends Model
         'total' => 'decimal:2'
     ];
 
-    public function sale()
+    public function customer()
     {
-        return $this->belongsTo(Sales::class, 'id_sale');
+        return $this->belongsTo(Customers::class, 'id_customer');
     }
 
     // Relación con Producto

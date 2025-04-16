@@ -19,8 +19,10 @@ return new class extends Migration
             $table->string('password', 200);
             $table->string('address', 200);
             $table->string('phone_number', 200);
+            $table->string('type', 200)->default('cliente');
             $table->boolean('verify')->default(false);
             $table->string('token_verification', 255)->nullable();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

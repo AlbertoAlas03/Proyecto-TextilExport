@@ -93,14 +93,20 @@ class CategoryController extends Controller
                 'name.required' => 'El nuevo nombre es obligatorio',
                 'description.required' => 'La nueva descripción es obligatoria'
             ]);
-            $category_updated = Categories::where('id', $request->id_category)->update([
+
+            $category = Categories::findOrFail($request->id_category);
+
+            $updateData = [
                 'name' => $request->name,
                 'description' => $request->description
-            ]);
+            ];
+
+            $category->update($updateData);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Categoria actualizada con exito',
-                'data' => $category_updated
+                'data' => $category->fresh()
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

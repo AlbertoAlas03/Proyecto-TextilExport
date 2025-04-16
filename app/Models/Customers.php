@@ -23,7 +23,9 @@ class Customers extends Authenticatable
         'address',
         'phone_number',
         'verify',
-        'token_verification'
+        'type',
+        'token_verification',
+        'status'
     ];
 
     public function ShoppingCart()
@@ -31,9 +33,14 @@ class Customers extends Authenticatable
         return $this->hasMany(ShoppingCart::class, 'id_customer');
     }
 
-    // Relación con Ventas
-    public function sale()
+    // Relación con Detalles de ventas
+    public function saleDetails()
     {
-        return $this->hasMany(Sales::class, 'id_customer');
+        return $this->hasMany(SalesDetail::class, 'id_customer');
+    }
+
+    public function isVerificationTokenValid()
+    {
+        return $this->created_at->gt(now()->subHours(24));
     }
 }
