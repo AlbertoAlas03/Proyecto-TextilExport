@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CountController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SalesController;
@@ -50,3 +51,6 @@ Route::middleware([EnsureFrontendRequestsAreStateful::class])->post('/login_cust
 //ventas
 Route::get('/list_sale', [SalesController::class, 'list_sale']);
 Route::post('/buy', [SalesController::class, 'buy']);
+
+//count
+Route::get('/count', [CountController::class, 'Count']);

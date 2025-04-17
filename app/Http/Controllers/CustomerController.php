@@ -18,7 +18,7 @@ class CustomerController extends Controller
             if ($customers->isEmpty()) {
                 return response()->json([
                     'success' => true,
-                    'data' => ['No hay clientes registrados']
+                    'data' => []
                 ], 200);
             } else {
                 return response()->json([

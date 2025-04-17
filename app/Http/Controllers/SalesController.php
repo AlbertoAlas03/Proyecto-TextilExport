@@ -16,7 +16,7 @@ class SalesController extends Controller
             if ($sales->isEmpty()) {
                 return response()->json([
                     'success' => true,
-                    'data' => ['No hay ventas']
+                    'data' => []
                 ], 200);
             } else {
                 return response()->json([

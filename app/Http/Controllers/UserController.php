@@ -17,7 +17,7 @@ class UserController extends Controller
             if ($users->isEmpty()) {
                 return response()->json([
                     'success' => true,
-                    'data' => ['No hay usuarios registrados']
+                    'data' => []
                 ], 200);
             } else {
                 return response()->json([

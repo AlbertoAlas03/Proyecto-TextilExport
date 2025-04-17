@@ -14,7 +14,7 @@ class CategoryController extends Controller
             if ($categories->isEmpty()) {
                 return response()->json([
                     'success' => true,
-                    'data' => ['No hay categorias disponibles']
+                    'data' => []
                 ], 200);
             } else {
                 return response()->json([

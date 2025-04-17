@@ -14,7 +14,7 @@ class ProductController extends Controller
             if ($products->isEmpty()) {
                 return response()->json([
                     'success' => true,
-                    'data' => ['No hay productos disponibles']
+                    'data' => []
                 ], 200);
             } else {
                 return response()->json([
