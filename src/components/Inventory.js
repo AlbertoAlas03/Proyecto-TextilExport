@@ -1,13 +1,36 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useProduct from "../hooks/useProduct";
+import AddProductModal from "./AddProductModal";
 
 const Inventory = () => {
 
-    const { product, getProduct } = useProduct();
+    const { product, getProduct, deleteProduct, setProduct, addProduct } = useProduct();
+    const [showAddModal, setShowAddModal] = useState(false);
+
 
     useEffect(() => {
         getProduct();
     }, [])
+
+    const handleDeleteProduct = async (id) => {
+        if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+            return;
+        }
+        try {
+            const response = await deleteProduct(id)
+            if (response) {
+                alert("Producto eliminado con exito")
+                setProduct(product.filter(product => product.id !== id));   //actualizamos el contenido de la tabla
+            }
+        } catch (error) {
+            console.error("Error deleting product:", error);
+            alert(error.message || "Error al eliminar el producto");
+        }
+    }
+
+    const showModal = async () => {
+        setShowAddModal(true)
+    }
 
     return (
         <>
@@ -15,6 +38,9 @@ const Inventory = () => {
                 <h1 className="h2"><i className="bi bi-box-seam"></i> Inventario</h1>
             </div>
             <div className="row g-4 mb-3">
+                <div className="col col-lg-2">
+                    <button type="button" className="btn btn-success" onClick={() => showModal()}> <i className="bi bi-plus"></i> Agregar producto</button>
+                </div>
                 {
                     product.length === 0 ? (
                         <div className="container-fluid d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
@@ -27,9 +53,6 @@ const Inventory = () => {
                         </div>
                     ) : (
                         <>
-                            <div className="col col-lg-2">
-                                <button type="button" className="btn btn-success"><i className="bi bi-plus"></i> Agregar producto</button>
-                            </div>
                             <table className="table table-hover">
                                 <thead>
                                     <tr>
@@ -58,7 +81,7 @@ const Inventory = () => {
                                             <td>{product.stock}</td>
                                             <td>{product.created_at}</td>
                                             <td>
-                                                <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }}>
+                                                <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }} onClick={() => handleDeleteProduct(product.id)}>
                                                     <i className="bi bi-trash"></i> Eliminar
                                                 </button>
                                                 <button type="button" className="btn btn-warning">
@@ -72,7 +95,13 @@ const Inventory = () => {
                         </>
                     )
                 }
-            </div>
+            </div >
+            <AddProductModal
+                show={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                addProduct={addProduct}
+                getProduct={getProduct}
+            />
         </>
     )
 }
