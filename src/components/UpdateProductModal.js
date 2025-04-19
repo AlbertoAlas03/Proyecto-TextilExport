@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useCategory from "../hooks/useCategory";
 
-const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
+const UpdateProductModal = ({ show, onClose, updateProduct, getProduct, updateData }) => {
 
     const [Id, setId] = useState("");
     const [Code, setCode] = useState("");
@@ -16,11 +16,11 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const { category, getCategory } = useCategory()
 
-    const handleAddProduct = async (e) => {
+    const handleUpdateProduct = async (e) => {
         e.preventDefault();
         setError(null)
         setIsProcessing(true)
-        if (!Id || !Code || !Name || !Description || !Price || !Stock || !selectedImage) {
+        if (!Id || !Code || !Name || !Description || !Price || !Stock) {
             setError("Por favor, ingrese la información solicitada");
             setIsProcessing(false)
             return;
@@ -28,6 +28,7 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
         }
         try {
             const ProductData = {
+                id_product: updateData.product_id,
                 id_category: Id,
                 code: Code,
                 name: Name,
@@ -37,15 +38,15 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
                 stock: Stock
             }
 
-            const response = await addProduct(ProductData);
+            const response = await updateProduct(ProductData);
 
             if (response) {
-                alert("Producto agregado correctamente")
+                alert("Producto actualizado correctamente")
                 onClose();
                 getProduct();
             }
         } catch (error) {
-            setError(error.message || "Hubo un error al agregar el producto")
+            setError(error.message || "Hubo un error al actualizar el producto")
         } finally {
             setIsProcessing(false);
         }
@@ -70,12 +71,30 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
         getCategory();
     }, [])
 
+    useEffect(() => {
+        if (updateData) {
+            setName(updateData.name || '');
+            setCode(updateData.code || '');
+            setDescription(updateData.description || '');
+            setPrice(updateData.price || '');
+            setStock(updateData.stock || '');
+            setId(updateData.category_id || '');
+            setproductSelected(updateData.category_name || '');
+        }
+    }, [updateData]);
+
+    useEffect(() => {
+        if (updateData?.imagen) {
+            setImagePreview(updateData.imagen);
+        }
+    }, [updateData]);
+
     return (
         <div className={`modal fade ${show ? 'show d-block' : ''}`} tabIndex="-1" style={{ backgroundColor: show ? 'rgba(0,0,0,0.5)' : 'none' }}>
             <div className="modal-dialog modal-dialog-centered modal-lg">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title"><i className="bi bi-box-seam"></i> Nuevo producto</h5>
+                        <h5 className="modal-title"><i className="bi bi-pencil-square"></i> Actualizar producto</h5>
                         <button type="button" className="btn-close" onClick={onClose}></button>
                     </div>
                     <div className="modal-body">
@@ -85,7 +104,7 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
                                 {error}
                             </div>
                         )}
-                        <form onSubmit={handleAddProduct}>
+                        <form onSubmit={handleUpdateProduct}>
                             <div className="row">
                                 {/* Columna izquierda */}
                                 <div className="col-md-6">
@@ -232,7 +251,7 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
                                             <span className="ms-2">Procesando...</span>
                                         </>
                                     ) : (
-                                        "Agregar producto"
+                                        "Actualizar producto"
                                     )}
                                 </button>
                             </div>
@@ -244,4 +263,4 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
     )
 }
 
-export default AddProductModal
+export default UpdateProductModal

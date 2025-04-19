@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import useProduct from "../hooks/useProduct";
 import AddProductModal from "./AddProductModal";
+import UpdateProductModal from "./UpdateProductModal";
 
 const Inventory = () => {
 
-    const { product, getProduct, deleteProduct, setProduct, addProduct } = useProduct();
+    const { product, getProduct, deleteProduct, setProduct, addProduct, updateProduct } = useProduct();
     const [showAddModal, setShowAddModal] = useState(false);
-
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [updateData, setUpdateData] = useState([])
 
     useEffect(() => {
         getProduct();
@@ -28,8 +30,13 @@ const Inventory = () => {
         }
     }
 
-    const showModal = async () => {
+    const showModalAdd = async () => {
         setShowAddModal(true)
+    }
+
+    const showModalUpdate = async (updateData) => {
+        setShowUpdateModal(true)
+        setUpdateData(updateData)
     }
 
     return (
@@ -39,7 +46,7 @@ const Inventory = () => {
             </div>
             <div className="row g-4 mb-3">
                 <div className="col col-lg-2">
-                    <button type="button" className="btn btn-success" onClick={() => showModal()}> <i className="bi bi-plus"></i> Agregar producto</button>
+                    <button type="button" className="btn btn-success" onClick={() => showModalAdd()}> <i className="bi bi-plus"></i> Agregar producto</button>
                 </div>
                 {
                     product.length === 0 ? (
@@ -84,7 +91,22 @@ const Inventory = () => {
                                                 <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }} onClick={() => handleDeleteProduct(product.id)}>
                                                     <i className="bi bi-trash"></i> Eliminar
                                                 </button>
-                                                <button type="button" className="btn btn-warning">
+                                                <button type="button" className="btn btn-warning" onClick={() => {
+                                                    const UpdateData = {
+                                                        product_id: product.id,
+                                                        category_id: product.categories.id,
+                                                        category_name: product.categories.name,
+                                                        code: product.code,
+                                                        name: product.name,
+                                                        description: product.description,
+                                                        imagen: product.imagen,
+                                                        price: product.price,
+                                                        stock: product.stock
+
+                                                    }
+                                                    showModalUpdate(UpdateData)
+                                                }
+                                                }>
                                                     <i className="bi bi-pencil-square"></i> Editar
                                                 </button>
                                             </td>
@@ -101,6 +123,13 @@ const Inventory = () => {
                 onClose={() => setShowAddModal(false)}
                 addProduct={addProduct}
                 getProduct={getProduct}
+            />
+            <UpdateProductModal
+                show={showUpdateModal}
+                onClose={() => setShowUpdateModal(false)}
+                updateProduct={updateProduct}
+                getProduct={getProduct}
+                updateData={updateData}
             />
         </>
     )

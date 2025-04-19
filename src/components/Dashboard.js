@@ -3,6 +3,8 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import Footer from "./Footer";
 import Main from "./Main";
 import Inventory from "./Inventory";
+import Category from "./Category";
+import Sales from "./Sales";
 
 const Dashboard = () => {
 
@@ -70,6 +72,12 @@ const Dashboard = () => {
                             </TabPanel>
                             <TabPanel>
                                 <Inventory />
+                            </TabPanel>
+                            <TabPanel>
+                                <Category />
+                            </TabPanel>
+                            <TabPanel>
+                                <Sales />
                             </TabPanel>
                         </div>
                     </div>
