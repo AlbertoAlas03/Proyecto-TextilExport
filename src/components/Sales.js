@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
 import useSales from "../hooks/useSales";
+import BillModal from "./BillModal";
 
 const Sales = () => {
 
     const { sales, getSales } = useSales();
+    const [ShowBill, setShowBill] = useState(false);
+    const [data, setData] = useState([])
+
+    const handleShowBill = (Data) => {
+        setShowBill(true)
+        setData(Data)
+    }
 
     useEffect(() => {
         getSales();
@@ -12,7 +20,7 @@ const Sales = () => {
     return (
         <>
             <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 className="h2"><i class="bi bi-receipt-cutoff"></i> Ventas</h1>
+                <h1 className="h2"><i className="bi bi-receipt-cutoff"></i> Ventas</h1>
             </div>
             <div className="row g-4 mb-3">
                 {
@@ -48,13 +56,31 @@ const Sales = () => {
                                             <td>{sale.customer?.name}</td>
                                             <td>{sale.product?.name}</td>
                                             <td>{sale.amount}</td>
-                                            <td>{sale.unit_price}</td>
-                                            <td>{sale.total}</td>
+                                            <td>${sale.unit_price}</td>
+                                            <td>${sale.total}</td>
                                             <td>{sale.status}</td>
                                             <td>{sale.created_at}</td>
                                             <td>
-                                                <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }}>
-                                                    <i className="bi bi-trash"></i> Generar PDF
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-success"
+                                                    style={{ marginRight: '10px' }}
+                                                    onClick={() => {
+                                                        const Data = {
+                                                            id_sale: sale.id,
+                                                            customer: sale.customer?.name,
+                                                            product: sale.product?.name,
+                                                            amount: sale.amount,
+                                                            unit_price: sale.unit_price,
+                                                            total: sale.total,
+                                                            status: sale.status,
+                                                            date: sale.created_at
+                                                        }
+                                                        handleShowBill(Data)
+                                                    }
+                                                    }
+                                                >
+                                                    <i className="bi bi-eye"></i> Ver factura
                                                 </button>
                                             </td>
                                         </tr>
@@ -65,6 +91,11 @@ const Sales = () => {
                     )
                 }
             </div >
+            <BillModal
+                show={ShowBill}
+                onClose={() => setShowBill(false)}
+                data={data}
+            />
         </>
     )
 }

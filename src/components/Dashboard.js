@@ -5,6 +5,8 @@ import Main from "./Main";
 import Inventory from "./Inventory";
 import Category from "./Category";
 import Sales from "./Sales";
+import Users from "./Users";
+import Customers from "./Customers";
 
 const Dashboard = () => {
 
@@ -78,6 +80,12 @@ const Dashboard = () => {
                             </TabPanel>
                             <TabPanel>
                                 <Sales />
+                            </TabPanel>
+                            <TabPanel>
+                                <Users />
+                            </TabPanel>
+                            <TabPanel>
+                                <Customers />
                             </TabPanel>
                         </div>
                     </div>

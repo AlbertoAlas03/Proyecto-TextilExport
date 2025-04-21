@@ -29,6 +29,7 @@ const AddCategoryModal = ({ show, onClose, addCategory, getCategory }) => {
                 alert("Categoría agregada correctamente")
                 onClose();
                 getCategory();
+                ClearForm();
             }
         } catch (error) {
             setError(error.message || "Hubo un error al agregar la categoría")
@@ -36,6 +37,11 @@ const AddCategoryModal = ({ show, onClose, addCategory, getCategory }) => {
             setIsProcessing(false);
         }
 
+    }
+
+    const ClearForm = () => {
+        setName("");
+        setDescription("");
     }
 
     useEffect(() => {

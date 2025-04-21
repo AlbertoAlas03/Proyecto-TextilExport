@@ -12,7 +12,7 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [error, setError] = useState(null);
-    const [productSeleted, setproductSelected] = useState("");
+    const [categorySeleted, setcategorySelected] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
     const { category, getCategory } = useCategory()
 
@@ -43,6 +43,7 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
                 alert("Producto agregado correctamente")
                 onClose();
                 getProduct();
+                ClearForm();
             }
         } catch (error) {
             setError(error.message || "Hubo un error al agregar el producto")
@@ -65,6 +66,18 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
             reader.readAsDataURL(file);
         }
     };
+
+    const ClearForm = () => {
+        setId("");
+        setCode("");
+        setName("");
+        setDescription("");
+        setPrice("");
+        setStock("");
+        setcategorySelected("");
+        setSelectedImage(null);
+        setImagePreview(null);
+    }
 
     useEffect(() => {
         getCategory();
@@ -168,7 +181,7 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
                                                 data-bs-toggle="dropdown"
                                                 aria-expanded="false"
                                             >
-                                                {productSeleted || "Seleccione la categoría"}
+                                                {categorySeleted || "Seleccione la categoría"}
                                             </button>
                                             <ul className="dropdown-menu w-100" aria-labelledby="category-dropdown">
                                                 {category.length === 0 ? (
@@ -182,7 +195,7 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
                                                                 onClick={(e) => {
                                                                     e.preventDefault();
                                                                     setId(category.id);
-                                                                    setproductSelected(category.name);
+                                                                    setcategorySelected(category.name);
                                                                 }}
                                                             >
                                                                 {category.name}
