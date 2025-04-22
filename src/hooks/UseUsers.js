@@ -7,7 +7,7 @@ const UseUsers = () => {
     const url_delete = Data + "delete_user"
     const url_add = Data + "create_user"
     const url_update = Data + "update_user"
-    const [user, setUser] = useState([]);
+    const [User, setUser] = useState([]);
 
     const getUser = async () => {
         try {
@@ -120,7 +120,7 @@ const UseUsers = () => {
         return data
     }
 
-    return { user, getUser, deleteUser, setUser, addUser, updateUser }
+    return { User, getUser, deleteUser, setUser, addUser, updateUser }
 
 }
 

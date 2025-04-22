@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import useUsers from "../hooks/UseUsers";
 import AddUserModal from "./AddUserModal";
 import UpdateUserModal from "./UpdateUserModal";
+import { useAuth } from '../hooks/AuthContext';
 
 const Users = () => {
 
-    const { user, getUser, deleteUser, setUser, addUser, updateUser } = useUsers();
+    const { User, getUser, deleteUser, setUser, addUser, updateUser } = useUsers();
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [updateData, setUpdateData] = useState([])
+    const { user } = useAuth();
 
     useEffect(() => {
         getUser();
@@ -22,7 +24,7 @@ const Users = () => {
             const response = await deleteUser(id)
             if (response) {
                 alert("Usuario eliminado con exito")
-                setUser(user.filter(user => user.id !== id));   //actualizamos el contenido de la tabla
+                setUser(User.filter(user => User.id !== id));   //actualizamos el contenido de la tabla
             }
         } catch (error) {
             alert(error.message || "Error al eliminar el usuario");
@@ -48,7 +50,7 @@ const Users = () => {
                     <button type="button" className="btn btn-success" onClick={() => showModalAdd()}><i className="bi bi-person-plus"></i> Agregar usuario</button>
                 </div>
                 {
-                    user.length === 0 ? (
+                    User.length === 0 ? (
                         <div className="container-fluid d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
                             <div className="text-center">
                                 <i className="bi bi-person-x display-1 text-warning mb-4"></i>
@@ -73,33 +75,39 @@ const Users = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {user.map((user) => (
-                                        <tr key={user.id}>
-                                            <th scope="row">{user.id}</th>
-                                            <td>{user.name}</td>
-                                            <td>{user.last_name}</td>
-                                            <td>{user.password}</td>
-                                            <td>{user.email}</td>
-                                            <td>{user.type}</td>
-                                            <td>{user.created_at}</td>
+                                    {User.map((User) => (
+                                        <tr key={User.id}>
+                                            <th scope="row">{User.id}</th>
+                                            <td>{User.name}</td>
+                                            <td>{User.last_name}</td>
+                                            <td>{User.password}</td>
+                                            <td>{User.email}</td>
+                                            <td>{User.type}</td>
+                                            <td>{User.created_at}</td>
                                             <td>
-                                                <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }} onClick={() => handleDeleteUser(user.id)}>
-                                                    <i className="bi bi-trash"></i> Eliminar
-                                                </button>
-                                                <button type="button" className="btn btn-warning" onClick={() => {
-                                                    const UpdateData = {
-                                                        id_user: user.id,
-                                                        name: user.name,
-                                                        last_name: user.last_name,
-                                                        password: user.password,
-                                                        email: user.email,
-                                                        type: user.type
-                                                    }
-                                                    showModalUpdate(UpdateData)
+                                                {
+                                                    user.id !== User.id && (
+                                                        <>
+                                                            <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }} onClick={() => handleDeleteUser(User.id)}>
+                                                                <i className="bi bi-trash"></i> Eliminar
+                                                            </button>
+                                                            <button type="button" className="btn btn-warning" onClick={() => {
+                                                                const UpdateData = {
+                                                                    id_user: User.id,
+                                                                    name: User.name,
+                                                                    last_name: User.last_name,
+                                                                    password: User.password,
+                                                                    email: User.email,
+                                                                    type: User.type
+                                                                }
+                                                                showModalUpdate(UpdateData)
+                                                            }
+                                                            }>
+                                                                <i className="bi bi-pencil-square"></i> Editar
+                                                            </button>
+                                                        </>
+                                                    )
                                                 }
-                                                }>
-                                                    <i className="bi bi-pencil-square"></i> Editar
-                                                </button>
                                             </td>
                                         </tr>
                                     ))}

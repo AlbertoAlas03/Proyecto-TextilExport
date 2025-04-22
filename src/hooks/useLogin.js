@@ -31,7 +31,8 @@ const useLogin = () => {
             name: data.usuario.name,
             last_name: data.usuario.last_name,
             email: data.usuario.email,
-            type: data.usuario.type
+            type: data.usuario.type,
+            created_at: data.usuario.created_at
         }
 
 
@@ -39,9 +40,21 @@ const useLogin = () => {
         setUser(DataUser);
         console.log("Usuario autenticado:", DataUser);
         return DataUser; // Retorna la respuesta completa para manejarla en el componente
+    }
+
+    const logout = async () => {
+        try {
+            sessionStorage.removeItem("user");
+            setUser(null);
+
+            return { message: "usuario deslogueado" }
+        } catch (error) {
+            console.log("error al cerrar sesión: ", error);
+        }
+
     };
 
-    return { login }
+    return { login, logout }
 }
 
 export default useLogin;
