@@ -21,9 +21,8 @@ class VerifyController extends Controller
             }
 
             $customer->update([
-                'verify' => true,
-                'token_verification' => null,
-                'status' => true
+                'verify' => 'verificado',
+                'token_verification' => null
             ]);
 
             return response()->json(['message' => 'Cuenta verificada con éxito, ya puedes iniciar sesión'], 200);

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_customer')->constrained('clientes')->onDelete('cascade');
             $table->foreignId('id_product')->constrained('productos')->onDelete('cascade');
-            $table->integer('amount')->nullable();
             $table->timestamps();
 
             $table->unique(['id_customer', 'id_product']);

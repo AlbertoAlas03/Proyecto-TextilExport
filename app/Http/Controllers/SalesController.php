@@ -12,7 +12,7 @@ class SalesController extends Controller
     public function list_sale()
     {
         try {
-            $sales = SalesDetail::orderBy('created_at', 'desc')->get();
+            $sales = SalesDetail::with(['customer', 'product'])->orderBy('created_at', 'desc')->get();
             if ($sales->isEmpty()) {
                 return response()->json([
                     'success' => true,
@@ -67,6 +67,13 @@ class SalesController extends Controller
                 ], 400);
             }
 
+            if ($request->amount <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cantidad a comprar ingresada no es válida'
+                ], 400);
+            }
+
             $amount = (float)$request->amount;
             $unit_price = (float)$product->price;
 
@@ -77,7 +84,7 @@ class SalesController extends Controller
                 'id_customer' => $request->id_customer,
                 'id_product' => $request->id_product,
                 'amount' => $amount,
-                'unit price' => $unit_price,
+                'unit_price' => $unit_price,
                 'total' => $total
             ]);
             // Actualizando el stock de la oferta

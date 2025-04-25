@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use App\Models\Users;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
@@ -20,9 +20,27 @@ class UserController extends Controller
                     'data' => []
                 ], 200);
             } else {
+
+                $userData = $users->map(function ($user) {
+
+                    $decrypted = Crypt::decryptString($user->password);
+
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'last_name' => $user->last_name,
+                        'password' => $decrypted,
+                        'email' => $user->email,
+                        'type' => $user->type,
+                        'active' => $user->active,
+                        'created_at' => $user->created_at,
+                        'updated_at' => $user->updated_at
+                    ];
+                });
+
                 return response()->json([
                     'success' => true,
-                    'data' => $users
+                    'data' => $userData
                 ], 200);
             }
         } catch (\Exception $e) {
@@ -40,7 +58,7 @@ class UserController extends Controller
                 'name' => 'required|string|max:255',
                 'last_name' => 'required|string',
                 'password' => 'required|string|min:8|confirmed',
-                'email' => 'required|string|email|max:255|unique:usuarios',
+                'email' => 'required|string|email|max:255|unique:usuarios,email',
                 'type' => 'required|string'
             ], [
                 'name.required' => 'El nombre es obligatorio',
@@ -53,23 +71,23 @@ class UserController extends Controller
                 'email.unique' => 'Este correo electrónico ya está en uso',
                 'type.required' => 'El tipo de usuario es obligatorio'
             ]);
+
+            $encrypted = Crypt::encryptString($request->password);
+
             $users = Users::create([
                 'name' => $request->name,
                 'last_name' => $request->last_name,
-                'password' => bcrypt($request->password),
+                'password' => $encrypted,
                 'email' => $request->email,
                 'type' => $request->type,
                 'active' => true
             ]);
 
             return response()->json([
-                'success' => true,
-                'message' => 'usuario registrado con exito',
-                'data' => $users
+                'message' => 'usuario registrado con exito'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
                 'message' => 'Error al registrar al usuario: ' . $e->getMessage()
             ], 500);
         }
@@ -90,7 +108,7 @@ class UserController extends Controller
                     'max:255',
                     Rule::unique('usuarios')->ignore($request->id_user)
                 ],
-                'type' => 'required|string|in:administrador,empleado'
+                'type' => 'required|string'
             ], [
                 'id_user.exists' => 'Este usuario no existe',
                 'id_user.required' => 'El id es requerido',
@@ -101,8 +119,7 @@ class UserController extends Controller
                 'email.required' => 'El nuevo correo electrónico es obligatorio',
                 'email.email' => 'El formato del correo electrónico es inválido',
                 'email.unique' => 'Este correo electrónico ya está en uso',
-                'type.required' => 'El tipo de usuario es obligatorio',
-                'type.in' => 'El tipo de usuario no es válido'
+                'type.required' => 'El tipo de usuario es obligatorio'
             ]);
 
             $user = Users::findOrFail($request->id_user);
@@ -115,15 +132,13 @@ class UserController extends Controller
             ];
 
             if ($request->filled('password')) {
-                $updateData['password'] = bcrypt($request->password);
+                $updateData['password'] = Crypt::encryptString($request->password);
             }
 
             $user->update($updateData);
 
             return response()->json([
-                'success' => true,
                 'message' => 'Usuario actualizado con éxito',
-                'data' => $user->fresh()
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -145,13 +160,10 @@ class UserController extends Controller
             ]);
             $user_deleted = Users::where('id', '=', $request->id_user)->delete();
             return response()->json([
-                'success' => true,
-                'message' => 'usuario eliminado con exito',
-                'data' => $user_deleted
+                'message' => 'usuario eliminado con exito'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
                 'message' => 'Error al eliminar el usuario: ' . $e->getMessage()
             ], 500);
         }
@@ -171,7 +183,15 @@ class UserController extends Controller
 
             $user = Users::where('email', $request->email)->first();
 
-            if (!$user || !Hash::check($request->password, $user->password)) {
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Usuario no registrado'
+                ], 401);
+            }
+
+            $descryptedPassword = Crypt::decryptString($user->password);
+
+            if (!$user || $descryptedPassword !== $request->password) {
                 return response()->json(['message' => 'Credenciales inválidas'], 401);
             }
 

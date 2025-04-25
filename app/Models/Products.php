@@ -16,7 +16,7 @@ class Products extends Model
         'code',
         'name',
         'description',
-        'image',
+        'imagen',
         'price',
         'stock'
     ];
@@ -25,6 +25,15 @@ class Products extends Model
         'price' => 'decimal:2',
         'stock' => 'integer'
     ];
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        return $this->imagen
+            ? asset('storage/' . $this->imagen)
+            : null; // o una imagen por defecto
+    }
 
     public function categories() //relacion con tabla categorias
     {

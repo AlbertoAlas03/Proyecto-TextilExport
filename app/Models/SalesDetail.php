@@ -15,14 +15,14 @@ class SalesDetail extends Model
         'id_customer',
         'id_product',
         'amount',
-        'unit price',
+        'unit_price',
         'total',
         'status'
     ];
 
     protected $casts = [
         'amount' => 'integer',
-        'unit price' => 'decimal:2',
+        'unit_price' => 'decimal:2',
         'total' => 'decimal:2'
     ];
 

@@ -20,9 +20,9 @@ return new class extends Migration
             $table->string('address', 200);
             $table->string('phone_number', 200);
             $table->string('type', 200)->default('cliente');
-            $table->boolean('verify')->default(false);
+            $table->string('verify')->default('no verificado');
             $table->string('token_verification', 255)->nullable();
-            $table->boolean('status')->default(true);
+            $table->string('status')->default('habilitado');
             $table->timestamps();
         });
     }

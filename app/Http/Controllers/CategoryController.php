@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Categories;
+use App\Models\Products;
 
 class CategoryController extends Controller
 {
@@ -33,10 +34,11 @@ class CategoryController extends Controller
     {
         try {
             $request->validate([
-                'name' => 'required|string',
+                'name' => 'required|string|unique:categorias,name',
                 'description' => 'required|string'
             ], [
                 'name.required' => 'El nombre de la categoria es obligatoria',
+                'name.unique' => 'Esta categoría ya existe',
                 'description.required' => 'La descripción de la categoria es obligatoria'
             ]);
             $categories = Categories::create([
@@ -44,9 +46,7 @@ class CategoryController extends Controller
                 'description' => $request->description
             ]);
             return response()->json([
-                'success' => true,
-                'message' => 'categoria agregada con exito',
-                'data' => $categories
+                'message' => 'categoria agregada con exito'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -66,11 +66,15 @@ class CategoryController extends Controller
                 'id_category.integer' => 'El id debe ser un entero',
                 'id_category.exists' => 'Esta categoria no existe'
             ]);
+            $products = Products::where('id_category', '=', $request->id_category)->get();
+            if ($products) {
+                return response()->json([
+                    'message' => 'No puedes eliminar esta categoría porque existen productos asignados'
+                ], 500);
+            }
             $categorie_deleted = Categories::where('id', '=', $request->id_category)->delete();
             return response()->json([
-                'success' => true,
-                'message' => 'categoria eliminada con exito',
-                'data' => $categorie_deleted
+                'message' => 'categoria eliminada con exito'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -104,9 +108,7 @@ class CategoryController extends Controller
             $category->update($updateData);
 
             return response()->json([
-                'success' => true,
-                'message' => 'Categoria actualizada con exito',
-                'data' => $category->fresh()
+                'message' => 'Categoria actualizada con exito'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

@@ -13,8 +13,7 @@ class ShoppingCart extends Model
 
     protected $fillable = [
         'id_customer',
-        'id_product',
-        'amount'
+        'id_product'
     ];
 
     protected $casts = [

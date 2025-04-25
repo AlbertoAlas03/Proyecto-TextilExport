@@ -3,11 +3,15 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CountController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VerifyController;
+use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\ShoppingCartController;
+use App\Http\Controllers\FilterController;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 // Route::get('/user', function (Request $request) {
@@ -47,10 +51,31 @@ Route::put('/enable_customer', [CustomerController::class, 'enable_customer']);
 Route::get('/verify/{token}', [VerifyController::class, 'verify']);
 Route::post('/register', [CustomerController::class, 'register_customer']);
 Route::middleware([EnsureFrontendRequestsAreStateful::class])->post('/login_customer', [CustomerController::class, 'login_customer']);
+Route::post('/password/send_code_customer', [CustomerController::class, 'SendCode']);
+Route::post('/password/change_password_customer', [CustomerController::class, 'ChangePassword']);
 
 //ventas
 Route::get('/list_sale', [SalesController::class, 'list_sale']);
+Route::post('/list_sales_customer', [CustomerController::class, 'sales_customer']);
 Route::post('/buy', [SalesController::class, 'buy']);
 
 //count
 Route::get('/count', [CountController::class, 'Count']);
+
+//cambiar contreña
+Route::post('/password/email', [ChangePasswordController::class, 'sendCode']);
+Route::post('/password/change', [ChangePasswordController::class, 'changePassword']);
+
+//carrito de compras
+Route::post('/list_cart_items', [ShoppingCartController::class, 'list_cart_items']);
+Route::delete('/delete_cart_item', [ShoppingCartController::class, 'delete_cart_item']);
+Route::post('/add_cart_item', [ShoppingCartController::class, 'add_cart_item']);
+
+//search
+Route::post('/search_products_category', [FilterController::class, 'SearchProductByCategory']);
+Route::post('/search_products_code', [FilterController::class, 'searchProductByCode']);
+Route::post('/search_category_name', [FilterController::class, 'categoryByName']);
+Route::post('/search_user_last_name', [FilterController::class, 'userByLast_name']);
+Route::post('/search_customer_last_name', [FilterController::class, 'customerByLast_name']);
+Route::post('/search_sale', [FilterController::class, 'SearchSale']);
+Route::post('/search_sale_customer',[FilterController::class, 'SearchSaleCustomer']);
