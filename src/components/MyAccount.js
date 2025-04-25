@@ -106,7 +106,7 @@ const MyAccount = () => {
                             <p><strong>Usuario:</strong> {user?.name} {user?.last_name}</p>
                             <p><strong>Email:</strong> {user?.email}</p>
                             <p><strong>Rol:</strong> {user?.type}</p>
-                            <p><strong>Fecha de creación:</strong> {user?.created_at}</p>
+                            <p><strong>Fecha de creación:</strong> {new Date(user?.created_at).toLocaleDateString()}</p>
                             <hr className="my-3" />
                             {
                                 showFormPassword ? (

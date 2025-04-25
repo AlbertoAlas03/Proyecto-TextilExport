@@ -27,7 +27,7 @@ const BillModal = ({ show, data, onClose }) => {
                                 <div className="col-md-6 text-end">
                                     <h5 className="text-muted">FACTURA</h5>
                                     <p className="mb-1"><strong>No.:</strong> {data.id_sale}</p>
-                                    <p className="mb-1"><strong>Fecha:</strong> {data.date}</p>
+                                    <p className="mb-1"><strong>Fecha:</strong> {new Date(data.date).toLocaleDateString()}</p>
                                     <p className="mb-1"><strong>Cliente:</strong> {data.customer}</p>
                                 </div>
                             </div>

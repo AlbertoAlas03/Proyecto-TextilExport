@@ -59,27 +59,15 @@ const useProduct = () => {
         }
     }
 
-    const addProduct = async (ProductData) => {
-
-        const requestData = {
-            id_category: ProductData.id_category,
-            code: ProductData.code,
-            name: ProductData.name,
-            description: ProductData.description,
-            imagen: ProductData.selectedImage,
-            price: ProductData.price,
-            stock: ProductData.stock
-        }
+    const addProduct = async (formData) => {
 
         const response = await fetch(url_add, {
             method: "POST",
             headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "application/json"
             },
             credentials: "include", // Necesario para cookies (Sanctum)
-            body: JSON.stringify(requestData)
+            body: formData
         });
 
         if (!response.ok) {
@@ -91,28 +79,17 @@ const useProduct = () => {
         return data
     }
 
-    const updateProduct = async (ProductData) => {
-
-        const requestData = {
-            id_product: ProductData.id_product,
-            id_category: ProductData.id_category,
-            code: ProductData.code,
-            name: ProductData.name,
-            description: ProductData.description,
-            imagen: ProductData.imagen,
-            price: ProductData.price,
-            stock: ProductData.stock
-        }
+    const updateProduct = async (formData) => {
 
         const response = await fetch(url_update, {
-            method: "PUT",
+            method: "POST",
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json",
                 "X-Requested-With": "XMLHttpRequest",
+                "X-HTTP-Method-Override": "PUT"
             },
             credentials: "include", // Necesario para cookies (Sanctum)
-            body: JSON.stringify(requestData)
+            body: formData
         });
         if (!response.ok) {
             const errorData = await response.json();

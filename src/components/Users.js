@@ -3,6 +3,7 @@ import useUsers from "../hooks/UseUsers";
 import AddUserModal from "./AddUserModal";
 import UpdateUserModal from "./UpdateUserModal";
 import { useAuth } from '../hooks/AuthContext';
+import useSearch from "../hooks/useSearch";
 
 const Users = () => {
 
@@ -11,6 +12,9 @@ const Users = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [updateData, setUpdateData] = useState([])
     const { user } = useAuth();
+    const { getUserByLast_name, userByLast_name } = useSearch();
+    const [dataSearched, setdataSearched] = useState("");
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         getUser();
@@ -40,6 +44,18 @@ const Users = () => {
         setUpdateData(updateData)
     }
 
+    const handleSearch = async (data) => {
+        setError(null)
+        try {
+            const response = await getUserByLast_name(data);
+            if (!response?.length) {
+                setError("Este usuario no existe");
+            }
+        } catch (error) {
+            setError(error.message || "Error al filtar el usuario");
+        }
+    }
+
     return (
         <>
             <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -49,71 +65,146 @@ const Users = () => {
                 <div className="col col-lg-2">
                     <button type="button" className="btn btn-success" onClick={() => showModalAdd()}><i className="bi bi-person-plus"></i> Agregar usuario</button>
                 </div>
+                <div className="col col-md-6 d-flex">
+                    <input
+                        type="text"
+                        className="form-control me-2"
+                        placeholder="Buscar usuario por apellido..."
+                        value={dataSearched}
+                        onChange={(e) => setdataSearched(e.target.value)}
+                    />
+                    <button type="button" className="btn btn-primary" onClick={() => handleSearch(dataSearched)}>
+                        <i className="bi bi-search"></i>
+                    </button>
+                </div>
                 {
-                    User.length === 0 ? (
-                        <div className="container-fluid d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
-                            <div className="text-center">
-                                <i className="bi bi-person-x display-1 text-warning mb-4"></i>
-                                <h2 className="fw-bold text-muted">
-                                    No hay usuarios registrados
-                                </h2>
-                            </div>
-                        </div>
-                    ) : (
-                        <>
-                            <table className="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Nombre</th>
-                                        <th scope="col">Apellido</th>
-                                        <th scope="col">Password</th>
-                                        <th scope="col">Email</th>
-                                        <th scope="col">Rol</th>
-                                        <th scope="col">Fecha de registro</th>
-                                        <th scope="col">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {User.map((User) => (
-                                        <tr key={User.id}>
-                                            <th scope="row">{User.id}</th>
-                                            <td>{User.name}</td>
-                                            <td>{User.last_name}</td>
-                                            <td>{User.password}</td>
-                                            <td>{User.email}</td>
-                                            <td>{User.type}</td>
-                                            <td>{User.created_at}</td>
-                                            <td>
-                                                {
-                                                    user.id !== User.id && (
-                                                        <>
-                                                            <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }} onClick={() => handleDeleteUser(User.id)}>
-                                                                <i className="bi bi-trash"></i> Eliminar
-                                                            </button>
-                                                            <button type="button" className="btn btn-warning" onClick={() => {
-                                                                const UpdateData = {
-                                                                    id_user: User.id,
-                                                                    name: User.name,
-                                                                    last_name: User.last_name,
-                                                                    password: User.password,
-                                                                    email: User.email,
-                                                                    type: User.type
-                                                                }
-                                                                showModalUpdate(UpdateData)
+                    userByLast_name.length > 0 ? (
+                        <table className="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Apellido</th>
+                                    <th scope="col">Password</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Rol</th>
+                                    <th scope="col">Fecha de registro</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {userByLast_name.map((User) => (
+                                    <tr key={User.id}>
+                                        <th scope="row">{User.id}</th>
+                                        <td>{User.name}</td>
+                                        <td>{User.last_name}</td>
+                                        <td>{User.password}</td>
+                                        <td>{User.email}</td>
+                                        <td>{User.type}</td>
+                                        <td>{new Date(User.created_at).toLocaleDateString()}</td>
+                                        <td>
+                                            {
+                                                user.id !== User.id && (
+                                                    <>
+                                                        <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }} onClick={() => handleDeleteUser(User.id)}>
+                                                            <i className="bi bi-trash"></i> Eliminar
+                                                        </button>
+                                                        <button type="button" className="btn btn-warning" onClick={() => {
+                                                            const UpdateData = {
+                                                                id_user: User.id,
+                                                                name: User.name,
+                                                                last_name: User.last_name,
+                                                                password: User.password,
+                                                                email: User.email,
+                                                                type: User.type
                                                             }
-                                                            }>
-                                                                <i className="bi bi-pencil-square"></i> Editar
-                                                            </button>
-                                                        </>
-                                                    )
-                                                }
-                                            </td>
+                                                            showModalUpdate(UpdateData)
+                                                        }
+                                                        }>
+                                                            <i className="bi bi-pencil-square"></i> Editar
+                                                        </button>
+                                                    </>
+                                                )
+                                            }
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        User.length === 0 ? (
+                            <div className="container-fluid d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
+                                <div className="text-center">
+                                    <i className="bi bi-person-x display-1 text-warning mb-4"></i>
+                                    <h2 className="fw-bold text-muted">
+                                        No hay usuarios registrados
+                                    </h2>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                {
+                                    error && (
+                                        <div className="alert alert-danger d-flex align-items-center" role="alert">
+                                            <i className="bi bi-x-circle-fill me-2"></i>
+                                            {error}
+                                        </div>
+                                    )
+                                }
+                                <table className="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Apellido</th>
+                                            <th scope="col">Password</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Rol</th>
+                                            <th scope="col">Fecha de registro</th>
+                                            <th scope="col">Acciones</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </>
+                                    </thead>
+                                    <tbody>
+                                        {User.map((User) => (
+                                            <tr key={User.id}>
+                                                <th scope="row">{User.id}</th>
+                                                <td>{User.name}</td>
+                                                <td>{User.last_name}</td>
+                                                <td>{User.password}</td>
+                                                <td>{User.email}</td>
+                                                <td>{User.type}</td>
+                                                <td>{new Date(User.created_at).toLocaleDateString()}</td>
+                                                <td>
+                                                    {
+                                                        user.id !== User.id && (
+                                                            <>
+                                                                <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }} onClick={() => handleDeleteUser(User.id)}>
+                                                                    <i className="bi bi-trash"></i> Eliminar
+                                                                </button>
+                                                                <button type="button" className="btn btn-warning" onClick={() => {
+                                                                    const UpdateData = {
+                                                                        id_user: User.id,
+                                                                        name: User.name,
+                                                                        last_name: User.last_name,
+                                                                        password: User.password,
+                                                                        email: User.email,
+                                                                        type: User.type
+                                                                    }
+                                                                    showModalUpdate(UpdateData)
+                                                                }
+                                                                }>
+                                                                    <i className="bi bi-pencil-square"></i> Editar
+                                                                </button>
+                                                            </>
+                                                        )
+                                                    }
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </>
+                        )
                     )
                 }
             </div >

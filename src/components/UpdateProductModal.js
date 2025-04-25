@@ -27,18 +27,20 @@ const UpdateProductModal = ({ show, onClose, updateProduct, getProduct, updateDa
 
         }
         try {
-            const ProductData = {
-                id_product: updateData.product_id,
-                id_category: Id,
-                code: Code,
-                name: Name,
-                description: Description,
-                imagen: selectedImage,
-                price: Price,
-                stock: Stock
+            const formData = new FormData();
+            formData.append('id_product', updateData?.id_product);
+            formData.append('id_category', Id);
+            formData.append('code', Code);
+            formData.append('name', Name);
+            formData.append('description', Description);
+            formData.append('price', Price);
+            formData.append('stock', Stock);
+
+            if (selectedImage) {
+                formData.append('imagen', selectedImage);
             }
 
-            const response = await updateProduct(ProductData);
+            const response = await updateProduct(formData);
 
             if (response) {
                 alert("Producto actualizado correctamente")
@@ -95,7 +97,10 @@ const UpdateProductModal = ({ show, onClose, updateProduct, getProduct, updateDa
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title"><i className="bi bi-pencil-square"></i> Actualizar producto</h5>
-                        <button type="button" className="btn-close" onClick={onClose}></button>
+                        <button type="button" className="btn-close" onClick={() => {
+                            onClose();
+                            setError(null);
+                        }}></button>
                     </div>
                     <div className="modal-body">
                         {error && (

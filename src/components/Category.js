@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import useCategory from "../hooks/useCategory";
 import AddCategoryModal from "./AddCategoryModal";
 import UpdateCategoryModal from "./UpdateCategoryModal";
+import useSearch from "../hooks/useSearch";
 
 const Category = () => {
 
@@ -9,6 +10,9 @@ const Category = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [updateData, setUpdateData] = useState([])
+    const { getCategoryByName, categoryByname } = useSearch();
+    const [dataSearched, setdataSearched] = useState("");
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         getCategory();
@@ -38,6 +42,15 @@ const Category = () => {
         setUpdateData(updateData)
     }
 
+    const handleSearch = async (data) => {
+        setError(null)
+        try {
+            const response = await getCategoryByName(data);
+        } catch (error) {
+            setError(error.message || "Error al filtar la categoria");
+        }
+    }
+
     return (
         <>
             <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -47,56 +60,118 @@ const Category = () => {
                 <div className="col col-lg-2">
                     <button type="button" className="btn btn-success" onClick={() => showModalAdd()}> <i className="bi bi-plus"></i> Agregar categoría</button>
                 </div>
+
+                <div className="col col-md-6 d-flex">
+                    <input
+                        type="text"
+                        className="form-control me-2"
+                        placeholder="Buscar categoría por nombre..."
+                        value={dataSearched}
+                        onChange={(e) => setdataSearched(e.target.value)}
+                    />
+                    <button type="button" className="btn btn-primary" onClick={() => handleSearch(dataSearched)}>
+                        <i className="bi bi-search"></i>
+                    </button>
+                </div>
+
                 {
-                    category.length === 0 ? (
-                        <div className="container-fluid d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
-                            <div className="text-center">
-                                <i className="bi bi-tags display-1 text-warning mb-4"></i>
-                                <h2 className="fw-bold text-muted">
-                                    No hay categorias registradas
-                                </h2>
-                            </div>
-                        </div>
-                    ) : (
-                        <>
-                            <table className="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Nombre</th>
-                                        <th scope="col">Descripción</th>
-                                        <th scope="col">Fecha registro</th>
-                                        <th scope="col">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {category.map((category) => (
-                                        <tr key={category.id}>
-                                            <th scope="row">{category.id}</th>
-                                            <td>{category.name}</td>
-                                            <td>{category.description}</td>
-                                            <td>{category.created_at}</td>
-                                            <td>
-                                                <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }} onClick={() => handleDeleteCategory(category.id)}>
-                                                    <i className="bi bi-trash"></i> Eliminar
-                                                </button>
-                                                <button type="button" className="btn btn-warning" onClick={() => {
-                                                    const UpdateData = {
-                                                        category_id: category.id,
-                                                        name: category.name,
-                                                        description: category.description
-                                                    }
-                                                    showModalUpdate(UpdateData)
+                    categoryByname.length > 0 ? (
+                        <table className="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Descripción</th>
+                                    <th scope="col">Fecha registro</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {categoryByname.map((categorybyname) => (
+                                    <tr key={categorybyname.id}>
+                                        <th scope="row">{categorybyname.id}</th>
+                                        <td>{categorybyname.name}</td>
+                                        <td>{categorybyname.description}</td>
+                                        <td>{new Date(categorybyname.created_at).toLocaleDateString()}</td>
+                                        <td>
+                                            <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }} onClick={() => handleDeleteCategory(categorybyname.id)}>
+                                                <i className="bi bi-trash"></i> Eliminar
+                                            </button>
+                                            <button type="button" className="btn btn-warning" onClick={() => {
+                                                const UpdateData = {
+                                                    category_id: categorybyname.id,
+                                                    name: categorybyname.name,
+                                                    description: categorybyname.description
                                                 }
-                                                }>
-                                                    <i className="bi bi-pencil-square"></i> Editar
-                                                </button>
-                                            </td>
+                                                showModalUpdate(UpdateData)
+                                            }
+                                            }>
+                                                <i className="bi bi-pencil-square"></i> Editar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        category.length === 0 ? (
+                            <div className="container-fluid d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
+                                <div className="text-center">
+                                    <i className="bi bi-tags display-1 text-warning mb-4"></i>
+                                    <h2 className="fw-bold text-muted">
+                                        No hay categorias registradas
+                                    </h2>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                {
+                                    error && (
+                                        <div className="alert alert-danger d-flex align-items-center" role="alert">
+                                            <i className="bi bi-x-circle-fill me-2"></i>
+                                            {error}
+                                        </div>
+                                    )
+                                }
+                                <table className="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Descripción</th>
+                                            <th scope="col">Fecha registro</th>
+                                            <th scope="col">Acciones</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </>
+                                    </thead>
+                                    <tbody>
+                                        {category.map((category) => (
+                                            <tr key={category.id}>
+                                                <th scope="row">{category.id}</th>
+                                                <td>{category.name}</td>
+                                                <td>{category.description}</td>
+                                                <td>{new Date(category.created_at).toLocaleDateString()}</td>
+                                                <td>
+                                                    <button type="button" className="btn btn-danger" style={{ marginRight: '10px' }} onClick={() => handleDeleteCategory(category.id)}>
+                                                        <i className="bi bi-trash"></i> Eliminar
+                                                    </button>
+                                                    <button type="button" className="btn btn-warning" onClick={() => {
+                                                        const UpdateData = {
+                                                            category_id: category.id,
+                                                            name: category.name,
+                                                            description: category.description
+                                                        }
+                                                        showModalUpdate(UpdateData)
+                                                    }
+                                                    }>
+                                                        <i className="bi bi-pencil-square"></i> Editar
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </>
+                        )
                     )
                 }
             </div >

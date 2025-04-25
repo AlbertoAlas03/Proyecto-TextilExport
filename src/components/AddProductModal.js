@@ -27,17 +27,16 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
 
         }
         try {
-            const ProductData = {
-                id_category: Id,
-                code: Code,
-                name: Name,
-                description: Description,
-                imagen: selectedImage,
-                price: Price,
-                stock: Stock
-            }
+            const formData = new FormData();
+            formData.append('id_category', Id);
+            formData.append('code', Code);
+            formData.append('name', Name);
+            formData.append('description', Description);
+            formData.append('price', Price);
+            formData.append('stock', Stock);
+            formData.append('imagen', selectedImage);
 
-            const response = await addProduct(ProductData);
+            const response = await addProduct(formData);
 
             if (response) {
                 alert("Producto agregado correctamente")
