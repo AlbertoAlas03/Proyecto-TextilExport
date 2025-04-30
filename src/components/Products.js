@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
 import PaymentModal from "./PaymentModal";
-import useBuy from "../hooks/useBuy";
 import useShoppingCart from "../hooks/useShoppingCart";
 import useSearchBar from "../hooks/useSearchBar";
 
 const Products = ({ products, customer, isVerified, getProducts }) => {
 
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [isProcessing, setIsProcessing] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
-    const { search, data } = useSearchBar();
+    const { search, data, setData } = useSearchBar();
     const [dataSearched, setDatasearched] = useState("");
     const [advice, setAdvice] = useState(null);
     const { add_item } = useShoppingCart();
-    const { buy } = useBuy();
 
     const handleBuyClick = (product) => {
+        setAdvice(null)
         if (!customer || !isVerified) { //verificar si el usuario esta logeado y autenticado
             alert("¡Debe iniciar sesión y estar verificado para poder comprar nuestros productos!");
             return;
@@ -38,12 +36,12 @@ const Products = ({ products, customer, isVerified, getProducts }) => {
     }
 
     const handleAdd_item = async (id_product) => {
+        setAdvice(null)
         if (!customer || !isVerified) {
             alert("¡Debe iniciar sesión y estar verificado para poder comprar nuestros productos!");
             return;
         }
         try {
-
             const dataItem = {
                 id_customer: customer.id,
                 id_product: id_product
@@ -52,44 +50,15 @@ const Products = ({ products, customer, isVerified, getProducts }) => {
             const response = await add_item(dataItem);
             if (response) {
                 alert("Producto añadido al carrito");
+                setData([])
+                setDatasearched('')
             }
         } catch (error) {
+            alert(error.message)
             console.log("Error al agregar el item: ", error);
         }
     }
 
-    const handlePaymentSubmit = async (paymentData) => { //procesar compra
-        setIsProcessing(true);
-        try {
-
-            const purchaseData = {
-                id_customer: customer.id,
-                id_product: selectedProduct.id,
-                amount: paymentData.amount,
-                paymentMethod: "credit_card",
-                cardDetails: {
-                    number: paymentData.cardNumber.replace(/\s/g, ""),
-                    expMonth: paymentData.expiryDate.split("/")[0],
-                    expYear: paymentData.expiryDate.split("/")[1],
-                    cvc: paymentData.cvc
-                }
-            };
-
-            const response = await buy(purchaseData);
-
-            if (response.success && response.message) {
-                alert("¡Compra exitosa!");
-                setShowPaymentModal(false);
-                getProducts();
-            } else {
-                throw new Error("La compra no pudo ser procesada correctamente");
-            }
-        } catch (error) {
-            alert(`Error en la compra: ${error.message}`);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
 
     return (
         <>
@@ -260,9 +229,12 @@ const Products = ({ products, customer, isVerified, getProducts }) => {
             <PaymentModal
                 show={showPaymentModal}
                 onClose={() => setShowPaymentModal(false)}
-                onSubmit={handlePaymentSubmit}
-                isProcessing={isProcessing}
                 product={selectedProduct}
+                setSelectedProduct={() => setSelectedProduct(null)}
+                customer={customer}
+                getProducts={getProducts}
+                setData={setData}
+                setDatasearched={() => setDatasearched('')}
             />
         </>
     )

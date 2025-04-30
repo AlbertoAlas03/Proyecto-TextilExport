@@ -61,7 +61,7 @@ const useSearchBar = () => {
         return data.data
     }
 
-    return { search, data, searchSaleCustomer, searchSale }
+    return { search, data, searchSaleCustomer, searchSale, setData }
 
 }
 

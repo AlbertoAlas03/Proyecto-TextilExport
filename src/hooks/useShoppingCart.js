@@ -68,7 +68,9 @@ const useShoppingCart = () => {
         const response = await fetch(url_add, {
             method: "POST",
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
             },
             credentials: "include", // Necesario para cookies (Sanctum)
             body: JSON.stringify(AddData)

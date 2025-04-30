@@ -13,6 +13,7 @@ const SalesDetails = ({ customer }) => {
     const [error, setError] = useState(null);
 
     const handleShowBill = (Data) => {
+        setError(null)
         setShowBill(true)
         setData(Data)
     }

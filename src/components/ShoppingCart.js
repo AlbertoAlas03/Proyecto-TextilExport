@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
-import useBuy from "../hooks/useBuy";
-import PaymentModal from "./PaymentModal";
+import PaymentModalShoppingCart from "./PaymentModalShoppingCart";
 
 const ShoppingCart = ({ customer, get_items, items, delete_item, getProducts }) => {
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [isProcessing, setIsProcessing] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [saleSelected, setsaleSelected] = useState(null);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
-    const { buy } = useBuy();
 
     const handleDeleteItem = async (saleSelected) => {
         try {
@@ -31,40 +28,6 @@ const ShoppingCart = ({ customer, get_items, items, delete_item, getProducts }) 
     useEffect(() => {
         get_items(customer.id);
     }, [])
-
-    const handlePaymentSubmit = async (paymentData) => { //procesar compra
-        setIsProcessing(true);
-        try {
-
-            const purchaseData = {
-                id_customer: customer.id,
-                id_product: selectedProduct.id,
-                amount: paymentData.amount,
-                paymentMethod: "credit_card",
-                cardDetails: {
-                    number: paymentData.cardNumber.replace(/\s/g, ""),
-                    expMonth: paymentData.expiryDate.split("/")[0],
-                    expYear: paymentData.expiryDate.split("/")[1],
-                    cvc: paymentData.cvc
-                }
-            };
-
-            const response = await buy(purchaseData);
-
-            if (response.success && response.message) {
-                alert("¡Compra exitosa!");
-                setShowPaymentModal(false);
-                get_items(customer.id);
-                getProducts();
-            } else {
-                throw new Error("La compra no pudo ser procesada correctamente");
-            }
-        } catch (error) {
-            alert(`Error en la compra: ${error.message}`);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
 
 
     return (
@@ -136,12 +99,14 @@ const ShoppingCart = ({ customer, get_items, items, delete_item, getProducts }) 
                 </div>
             </div>
 
-            <PaymentModal
+            <PaymentModalShoppingCart
                 show={showPaymentModal}
                 onClose={() => setShowPaymentModal(false)}
-                onSubmit={handlePaymentSubmit}
-                isProcessing={isProcessing}
                 product={selectedProduct}
+                setSelectedProduct={()=>setSelectedProduct(null)}
+                customer={customer}
+                getProducts={getProducts}
+                get_items={()=>get_items(customer.id)}
             />
 
             {showModal && (

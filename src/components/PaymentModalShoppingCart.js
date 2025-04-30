@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import useBuy from "../hooks/useBuy";
 
-const PaymentModal = ({ show, onClose, product, setSelectedProduct, customer, getProducts, setData, setDatasearched }) => {
+const PaymentModalShoppingCart = ({ show, onClose, product, setSelectedProduct, customer, getProducts, get_items }) => {
+
     const [cardNumber, setCardNumber] = useState("");
     const [expiryDate, setExpiryDate] = useState("");
     const [cvc, setCvc] = useState("");
@@ -71,8 +72,7 @@ const PaymentModal = ({ show, onClose, product, setSelectedProduct, customer, ge
                 getProducts()
                 setIsProcessing(false)
                 clearForm()
-                setData([])
-                setDatasearched()
+                get_items()
             }
         } catch (error) {
             console.log("Error al comprar: ", error.message)
@@ -210,7 +210,8 @@ const PaymentModal = ({ show, onClose, product, setSelectedProduct, customer, ge
                 </div>
             </div>
         </div>
-    );
-};
+    )
 
-export default PaymentModal;
+}
+
+export default PaymentModalShoppingCart

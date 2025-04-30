@@ -6,7 +6,6 @@ const useBuy = () => {
 
     const buy = async (purchaseData) => {
 
-        try {
             if (purchaseData.cardDetails.number.length !== 16) {
                 throw new Error("Número de tarjeta inválido");
             }
@@ -39,11 +38,6 @@ const useBuy = () => {
 
             const data = await response.json();
             return data; //retornando data
-
-        } catch (error) {
-            console.error("Error en la solicitud:", error);
-            throw error;
-        }
     }
 
     return { buy }
