@@ -10,15 +10,17 @@ const Category = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [updateData, setUpdateData] = useState([])
-    const { getCategoryByName, categoryByname } = useSearch();
+    const { getCategoryByName, categoryByname, setCategoryByName } = useSearch();
     const [dataSearched, setdataSearched] = useState("");
     const [error, setError] = useState(null);
 
     useEffect(() => {
         getCategory();
+
     }, [])
 
     const handleDeleteCategory = async (id) => {
+        setError(null)
         if (!window.confirm('¿Estás seguro de que quieres eliminar esta categoría?')) {
             return;
         }
@@ -27,6 +29,8 @@ const Category = () => {
             if (response) {
                 alert("Categoría eliminada con exito")
                 setCategory(category.filter(category => category.id !== id));   //actualizamos el contenido de la tabla
+                setCategoryByName([])
+                setdataSearched('');
             }
         } catch (error) {
             alert(error.message || "Error al eliminar la categoría");
@@ -34,10 +38,12 @@ const Category = () => {
     }
 
     const showModalAdd = async () => {
+        setError(null)
         setShowAddModal(true)
     }
 
     const showModalUpdate = async (updateData) => {
+        setError(null)
         setShowUpdateModal(true)
         setUpdateData(updateData)
     }
@@ -180,6 +186,8 @@ const Category = () => {
                 onClose={() => setShowAddModal(false)}
                 addCategory={addCategory}
                 getCategory={getCategory}
+                setCategoryByName={setCategoryByName}
+                setdataSearched={setdataSearched}
             />
             <UpdateCategoryModal
                 show={showUpdateModal}
@@ -187,6 +195,8 @@ const Category = () => {
                 updateCategory={updateCategory}
                 getCategory={getCategory}
                 updateData={updateData}
+                setCategoryByName={setCategoryByName}
+                setdataSearched={setdataSearched}
             />
         </>
     )

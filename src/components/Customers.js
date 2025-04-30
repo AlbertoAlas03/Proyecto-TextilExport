@@ -8,7 +8,7 @@ const Customers = () => {
     const { customer, getCustomers, disableCustomer, updateCustomer, enableCustomer } = useCustomer();
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [updateData, setUpdateData] = useState([])
-    const { getCustomerByLast_name, customerByLast_name } = useSearch();
+    const { getCustomerByLast_name, customerByLast_name, setCustomerByLast_name } = useSearch();
     const [dataSearched, setdataSearched] = useState("");
     const [error, setError] = useState(null);
 
@@ -17,6 +17,7 @@ const Customers = () => {
     }, [])
 
     const handleDisableCustomer = async (id_customer) => {
+        setError(null)
         if (!window.confirm('¿Estás seguro de que quieres inhabilitar a este cliente?')) {
             return;
         }
@@ -24,8 +25,9 @@ const Customers = () => {
             const response = await disableCustomer(id_customer)
             if (response) {
                 alert("Cliente inhabilitado con exito")
-                getCustomers()   //actualizamos el contenido de la tabla
-
+                getCustomers() //actualizamos el contenido de la tabla
+                setCustomerByLast_name([]);
+                setdataSearched('')
             }
         } catch (error) {
             console.error("Error disable customer:", error);
@@ -34,6 +36,7 @@ const Customers = () => {
     }
 
     const handleEnableCustomer = async (id_customer) => {
+        setError(null)
         if (!window.confirm('¿Estás seguro de que quieres habilitar a este cliente?')) {
             return;
         }
@@ -42,7 +45,8 @@ const Customers = () => {
             if (response) {
                 alert("Cliente habilitado con exito")
                 getCustomers()   //actualizamos el contenido de la tabla
-
+                setCustomerByLast_name([]);
+                setdataSearched('')
             }
         } catch (error) {
             console.error("Error enable customer:", error);
@@ -51,6 +55,7 @@ const Customers = () => {
     }
 
     const showModalUpdate = async (updateData) => {
+        setError(null)
         setShowUpdateModal(true)
         setUpdateData(updateData)
     }
@@ -247,6 +252,8 @@ const Customers = () => {
                 updateCustomer={updateCustomer}
                 getCustomers={getCustomers}
                 updateData={updateData}
+                setCustomerByLast_name={setCustomerByLast_name}
+                setdataSearched={setdataSearched}
             />
         </>
     )

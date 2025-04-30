@@ -112,7 +112,7 @@ const useCustomer = () => {
         return data;
     }
 
-    return { customer, getCustomers, disableCustomer, setCustomer, updateCustomer, enableCustomer }
+    return { customer, getCustomers, disableCustomer, updateCustomer, enableCustomer }
 }
 
 export default useCustomer

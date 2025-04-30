@@ -12,7 +12,7 @@ const Users = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [updateData, setUpdateData] = useState([])
     const { user } = useAuth();
-    const { getUserByLast_name, userByLast_name } = useSearch();
+    const { getUserByLast_name, userByLast_name, setUserByLast_name } = useSearch();
     const [dataSearched, setdataSearched] = useState("");
     const [error, setError] = useState(null);
 
@@ -21,6 +21,7 @@ const Users = () => {
     }, [])
 
     const handleDeleteUser = async (id) => {
+        setError(null)
         if (!window.confirm('¿Estás seguro de que quieres eliminar a este usuario?')) {
             return;
         }
@@ -28,7 +29,9 @@ const Users = () => {
             const response = await deleteUser(id)
             if (response) {
                 alert("Usuario eliminado con exito")
-                setUser(User.filter(user => User.id !== id));   //actualizamos el contenido de la tabla
+                setUser(User.filter(user => user.id !== id));   //actualizamos el contenido de la tabla
+                setUserByLast_name([]);
+                setdataSearched('')
             }
         } catch (error) {
             alert(error.message || "Error al eliminar el usuario");
@@ -36,10 +39,12 @@ const Users = () => {
     }
 
     const showModalAdd = async () => {
+        setError(null)
         setShowAddModal(true)
     }
 
     const showModalUpdate = async (updateData) => {
+        setError(null)
         setShowUpdateModal(true)
         setUpdateData(updateData)
     }
@@ -213,6 +218,8 @@ const Users = () => {
                 onClose={() => setShowAddModal(false)}
                 addUser={addUser}
                 getUser={getUser}
+                setUserByLast_name={setUserByLast_name}
+                setdataSearched={setdataSearched}
             />
             <UpdateUserModal
                 show={showUpdateModal}
@@ -220,6 +227,8 @@ const Users = () => {
                 updateUser={updateUser}
                 getUser={getUser}
                 updateData={updateData}
+                setUserByLast_name={setUserByLast_name}
+                setdataSearched={setdataSearched}
             />
         </>
     )

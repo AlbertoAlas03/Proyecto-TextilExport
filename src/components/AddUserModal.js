@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const AddUserModal = ({ show, onClose, addUser, getUser }) => {
+const AddUserModal = ({ show, onClose, addUser, getUser, setUserByLast_name, setdataSearched }) => {
 
     const [Name, setName] = useState("");
     const [Last_name, setLast_name] = useState("")
@@ -51,6 +51,8 @@ const AddUserModal = ({ show, onClose, addUser, getUser }) => {
                 onClose();
                 getUser();
                 ClearForm();
+                setUserByLast_name([])
+                setdataSearched('')
             }
         } catch (error) {
             setError(error.message || "Hubo un error al agregar el usuario")

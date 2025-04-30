@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const UpdateUserModal = ({ show, onClose, updateUser, getUser, updateData }) => {
+const UpdateUserModal = ({ show, onClose, updateUser, getUser, updateData, setUserByLast_name, setdataSearched }) => {
 
     const [Last_name, setLast_name] = useState("");
     const [Name, setName] = useState("");
@@ -40,6 +40,8 @@ const UpdateUserModal = ({ show, onClose, updateUser, getUser, updateData }) => 
                 alert("Usuario actualizado correctamente")
                 onClose();
                 getUser();
+                setUserByLast_name([])
+                setdataSearched('')
             }
         } catch (error) {
             setError(error.message || "Hubo un error al actualizar el usuario")

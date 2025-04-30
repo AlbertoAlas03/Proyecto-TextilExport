@@ -12,13 +12,14 @@ const Inventory = () => {
     const [updateData, setUpdateData] = useState([])
     const [dataSearched, setdataSearched] = useState("");
     const [error, setError] = useState(null);
-    const { getProductByCode, productBycode } = useSearch();
+    const { getProductByCode, productBycode, setproductBycode } = useSearch();
 
     useEffect(() => {
         getProduct();
     }, [])
 
     const handleDeleteProduct = async (id) => {
+        setError(null);
         if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
             return;
         }
@@ -26,7 +27,9 @@ const Inventory = () => {
             const response = await deleteProduct(id)
             if (response) {
                 alert("Producto eliminado con exito")
-                setProduct(product.filter(product => product.id !== id));   //actualizamos el contenido de la tabla
+                setProduct(product.filter(product => product.id !== id));//actualizamos el contenido de la tabla
+                setproductBycode([]);
+                setdataSearched('');
             }
         } catch (error) {
             console.error("Error deleting product:", error);
@@ -35,10 +38,12 @@ const Inventory = () => {
     }
 
     const showModalAdd = async () => {
+        setError(null);
         setShowAddModal(true)
     }
 
     const showModalUpdate = async (updateData) => {
+        setError(null);
         setShowUpdateModal(true)
         setUpdateData(updateData)
     }
@@ -250,6 +255,8 @@ const Inventory = () => {
                 onClose={() => setShowAddModal(false)}
                 addProduct={addProduct}
                 getProduct={getProduct}
+                setproductBycode={setproductBycode}
+                setdataSearched={setdataSearched}
             />
             <UpdateProductModal
                 show={showUpdateModal}
@@ -257,6 +264,8 @@ const Inventory = () => {
                 updateProduct={updateProduct}
                 getProduct={getProduct}
                 updateData={updateData}
+                setproductBycode={setproductBycode}
+                setdataSearched={setdataSearched}
             />
         </>
     )

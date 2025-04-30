@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useCategory from "../hooks/useCategory";
 
-const UpdateProductModal = ({ show, onClose, updateProduct, getProduct, updateData }) => {
+const UpdateProductModal = ({ show, onClose, updateProduct, getProduct, updateData, setproductBycode, setdataSearched }) => {
 
     const [Id, setId] = useState("");
     const [Code, setCode] = useState("");
@@ -46,6 +46,8 @@ const UpdateProductModal = ({ show, onClose, updateProduct, getProduct, updateDa
                 alert("Producto actualizado correctamente")
                 onClose();
                 getProduct();
+                setproductBycode([])
+                setdataSearched('');
             }
         } catch (error) {
             setError(error.message || "Hubo un error al actualizar el producto")

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useCategory from "../hooks/useCategory";
 
-const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
+const AddProductModal = ({ show, onClose, addProduct, getProduct, setproductBycode, setdataSearched }) => {
 
     const [Id, setId] = useState("");
     const [Code, setCode] = useState("");
@@ -40,6 +40,8 @@ const AddProductModal = ({ show, onClose, addProduct, getProduct }) => {
 
             if (response) {
                 alert("Producto agregado correctamente")
+                setproductBycode([])
+                setdataSearched('');
                 onClose();
                 getProduct();
                 ClearForm();

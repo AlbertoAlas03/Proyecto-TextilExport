@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const AddCategoryModal = ({ show, onClose, addCategory, getCategory }) => {
+const AddCategoryModal = ({ show, onClose, addCategory, getCategory, setCategoryByName, setdataSearched }) => {
 
     const [Name, setName] = useState("");
     const [Description, setDescription] = useState("");
@@ -30,6 +30,8 @@ const AddCategoryModal = ({ show, onClose, addCategory, getCategory }) => {
                 onClose();
                 getCategory();
                 ClearForm();
+                setCategoryByName([])
+                setdataSearched('')
             }
         } catch (error) {
             setError(error.message || "Hubo un error al agregar la categoría")

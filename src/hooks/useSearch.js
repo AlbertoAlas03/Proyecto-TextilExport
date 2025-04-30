@@ -140,7 +140,7 @@ const useSearch = () => {
         return data.data
     }
 
-    return { getProductByCode, productBycode, getCategoryByName, categoryByname, getUserByLast_name, userByLast_name, getCustomerByLast_name, customerByLast_name, getSaleByProduct, sale }
+    return { getProductByCode, productBycode, getCategoryByName, categoryByname, getUserByLast_name, userByLast_name, getCustomerByLast_name, customerByLast_name, getSaleByProduct, sale, setproductBycode, setCategoryByName, setUserByLast_name, setCustomerByLast_name }
 }
 
 export default useSearch

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const UpdateCategoryModal = ({ show, onClose, updateCategory, getCategory, updateData }) => {
+const UpdateCategoryModal = ({ show, onClose, updateCategory, getCategory, updateData, setCategoryByName, setdataSearched }) => {
 
     const [Name, setName] = useState("");
     const [Description, setDescription] = useState("");
@@ -30,6 +30,8 @@ const UpdateCategoryModal = ({ show, onClose, updateCategory, getCategory, updat
                 alert("Categoría actualizado correctamente")
                 onClose();
                 getCategory();
+                setCategoryByName([])
+                setdataSearched('')
             }
         } catch (error) {
             setError(error.message || "Hubo un error al actualizar la categoría")

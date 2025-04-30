@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const UpdateCustomerModal = ({ show, onClose, updateCustomer, getCustomers, updateData }) => {
+const UpdateCustomerModal = ({ show, onClose, updateCustomer, getCustomers, updateData, setCustomerByLast_name, setdataSearched }) => {
 
     const [Last_name, setLast_name] = useState("");
     const [Email, setEmail] = useState("");
@@ -18,7 +18,7 @@ const UpdateCustomerModal = ({ show, onClose, updateCustomer, getCustomers, upda
         e.preventDefault();
         setError(null)
         setIsProcessing(true)
-        if (!Name || !Last_name || !Email || !Password || !Password_confirmation || !Address || !Phone_number) {
+        if (!Name || !Last_name || !Email || !Password || !Address || !Phone_number) {
             setError("Por favor, ingrese la información solicitada");
             setIsProcessing(false)
             return;
@@ -42,6 +42,9 @@ const UpdateCustomerModal = ({ show, onClose, updateCustomer, getCustomers, upda
                 alert("Cliente actualizado correctamente")
                 onClose();
                 getCustomers();
+                setCustomerByLast_name([])
+                setdataSearched('')
+                setPassword_confirmation('')
             }
         } catch (error) {
             setError(error.message || "Hubo un error al actualizar el cliente")
@@ -82,7 +85,11 @@ const UpdateCustomerModal = ({ show, onClose, updateCustomer, getCustomers, upda
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title"><i className="bi bi-pencil-square"></i> Actualizar cliente</h5>
-                        <button type="button" className="btn-close" onClick={onClose}></button>
+                        <button type="button" className="btn-close" onClick={() => {
+                            onClose()
+                            setPassword_confirmation('')
+                            setError(null)
+                        }}></button>
                     </div>
                     <div className="modal-body">
                         {error && (
