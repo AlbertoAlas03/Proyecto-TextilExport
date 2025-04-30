@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Products;
+use App\Models\SalesDetail;
+use App\Models\ShoppingCart;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+
+use function Pest\Laravel\get;
 
 class ProductController extends Controller
 {
@@ -88,7 +92,15 @@ class ProductController extends Controller
                 'id_product.required' => 'El id es obligatorio',
                 'id_product.exists' => 'Este producto no existe'
             ]);
-            $product_deleted = Products::where('id', '=', $request->id_product)->delete();
+            $verifySaleDetailCustomer = SalesDetail::where('id_product', $request->id_product)->first();
+            $verifyShoppingCartCustomer = ShoppingCart::where('id_product', $request->id_product)->first();
+            if ($verifySaleDetailCustomer || $verifyShoppingCartCustomer) {
+                return response()->json([
+                    'message' => 'No puedes eliminar este producto'
+                ], 400);
+            }
+           
+            Products::where('id', $request->id_product)->delete();
             return response()->json([
                 'message' => 'Producto eliminado con exito'
             ], 200);

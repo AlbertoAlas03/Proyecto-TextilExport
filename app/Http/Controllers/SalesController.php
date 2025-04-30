@@ -37,40 +37,36 @@ class SalesController extends Controller
             $request->validate([
                 'id_customer' => 'required|exists:clientes,id',
                 'id_product' => 'required|exists:productos,id',
-                'amount' => 'required'
+                'amount' => 'required|min:1|integer'
             ], [
                 'id_customer.required' => 'El cliente es requerido',
                 'id_customer.exists' => 'Este cliente no existe',
                 'id_product.required' => 'El producto es requerido',
                 'id_product.exists' => 'Este producto no existe',
-                'amount.required' => 'Se debe saber que cantidad de productos se va a comprar'
+                'amount.required' => 'Se debe saber que cantidad de productos se va a comprar',
+                'amount.min' => 'El monto debe ser un entero positivo',
+                'amount.integer' => 'Monto no válido'
             ]);
 
             $customer = Customers::find($request->id_customer);
             $product = Products::find($request->id_product);
 
             //verificando si el usuario esta verificado
-            if ($customer->verify === 0) {
+            if ($customer->verify === "no verificado") {
                 return response()->json([
-                    'success' => false,
                     'message' => 'El cliente no esta verificado'
                 ], 400);
             }
-            // Verificando que la oferta esté disponible
-            if (
-                !$product ||
-                $product->stock <= 0
-            ) {
+
+            if (!$product || $product->stock <= 0) {
                 return response()->json([
-                    'success' => false,
                     'message' => 'El producto no esta disponible o no hay en existencias.'
                 ], 400);
             }
 
-            if ($request->amount <= 0) {
+            if ($product->stock < $request->amount) {
                 return response()->json([
-                    'success' => false,
-                    'message' => 'Cantidad a comprar ingresada no es válida'
+                    'message' => 'No hay suficientes productos para comprar'
                 ], 400);
             }
 
@@ -80,7 +76,7 @@ class SalesController extends Controller
             $total = round($amount * $unit_price, 2);
 
 
-            $sale = SalesDetail::create([
+            SalesDetail::create([
                 'id_customer' => $request->id_customer,
                 'id_product' => $request->id_product,
                 'amount' => $amount,
@@ -93,8 +89,6 @@ class SalesController extends Controller
             $product->save();
 
             return response()->json([
-                'success' => true,
-                'data' => $sale,
                 'message' => 'Compra exitosa.'
             ], 201);
         } catch (\Exception $e) {

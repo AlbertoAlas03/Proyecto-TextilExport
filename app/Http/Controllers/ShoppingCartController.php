@@ -67,7 +67,15 @@ class ShoppingCartController extends Controller
                 'id_product.required' => 'El id del producto es requerido'
             ]);
 
-            $itemAdded = ShoppingCart::create([
+            $verifyShoppingCart = ShoppingCart::where('id_product', $request->id_product)->first();
+
+            if ($verifyShoppingCart) {
+                return response()->json([
+                    'message' => 'Ya has añadido este producto'
+                ], 400);
+            }
+
+            ShoppingCart::create([
                 'id_customer' => $request->id_customer,
                 'id_product' => $request->id_product,
             ]);

@@ -66,13 +66,13 @@ class CategoryController extends Controller
                 'id_category.integer' => 'El id debe ser un entero',
                 'id_category.exists' => 'Esta categoria no existe'
             ]);
-            $products = Products::where('id_category', '=', $request->id_category)->get();
+            $products = Products::where('id_category', $request->id_category)->first();
             if ($products) {
                 return response()->json([
                     'message' => 'No puedes eliminar esta categoría porque existen productos asignados'
                 ], 500);
             }
-            $categorie_deleted = Categories::where('id', '=', $request->id_category)->delete();
+            Categories::where('id', $request->id_category)->delete();
             return response()->json([
                 'message' => 'categoria eliminada con exito'
             ], 200);
